@@ -1,0 +1,188 @@
+//code for the foreign currency code
+
+#Foreign Currency by Nevin Ndonwi
+
+from locale import* # import locale 
+
+rEUR = rGBP = rJPY = rCAD = rRUB =  0.0
+
+
+
+
+
+def getOneRate(prompt): 
+ 
+        #must be 'robust' - with loop and try except
+            while True:
+               try:
+                   v = float(input(prompt))
+                   
+                   if v > 0:
+                      break
+                   else:
+                      print("Illegal input, Input a number above 0\n")
+               except:
+                   print("Illegal input, (please input a number above 0) Please try again\n")
+            
+
+    #return must be a positive float greater than 0
+            return v
+   
+
+
+
+
+def getRates():
+     global rEUR , rGBP , rJPY, rCAD, rRUB
+     print("Please enter the currency rate per US $\n")
+     rEUR = getOneRate("EUR: ")
+     rGBP = getOneRate("GBP: ")
+     rJPY = getOneRate("JPY: ")
+     rCAD = getOneRate("CAD: ")
+     rRUB = getOneRate("RUB: ")
+
+
+def getChoice():
+    #use boolean variable for loop control..
+    val = False
+    while not val:
+        try:
+             c = int(input("Select Currency: 1=EUR, 2=GBP, 3=JPY, 4=CAD, 5=RUB, 9=New Rates, 0=quit\n"))
+             if (c < 0 or c > 5) and (c != 9):
+                 #illegitimate input
+                 print("Illegal input, (only 0,1,2,3,4,5,9, are valid inputs) Please try again\n")
+                 
+                 val = False
+             else:
+                 #legal input
+                 val = True 
+
+           
+
+        except ValueError:
+            print("Illegal input, (only 0,1,2,3,4,5,9, are valid inputs) Please try again\n")
+           
+            val = False
+
+    #returns user input to the main function
+    return c
+    
+    
+
+
+def doValuation():
+    global rEUR , rGBP , rJPY, rCAD, rRUB
+    qty = 0
+    cval = 0.0
+    gtotal = 0.0
+    totcunits = [ 0,  0 , 0, 0, 0 ]
+    totcval = [0.0,  0.0,  0.0, 0.0, 0.0]
+    totcnames = ["EUR", "GBP", "JPY", "CAD" , "RUB"]
+
+
+
+    choice = getChoice()
+
+    while choice != 0:
+        if choice == 1:
+            qty = getQty("Euros")
+            cval = qty * rEUR
+            print(qty, "euros has a value of %s" %currency(cval,grouping = True) )
+
+            totcunits[choice - 1] = totcunits[choice - 1] + qty
+            totcval[choice - 1] = totcval[choice - 1] + cval
+        
+        elif choice == 2:
+            qty = getQty("Pounds Sterling")
+            cval = qty * rGBP
+            print(qty, "Pounds Sterling has a value of %s" %currency(cval,grouping = True) )
+            
+            totcunits[choice - 1] = totcunits[choice - 1] + qty
+            totcval[choice - 1] = totcval[choice - 1] + cval
+
+        elif choice == 3:
+            qty = getQty("Yen")
+            cval = qty * rJPY
+            print(qty, "Yen has a value of %s" %currency(cval,grouping = True) )
+
+            
+            totcunits[choice - 1] = totcunits[choice - 1] + qty
+            totcval[choice - 1] = totcval[choice - 1] + cval
+
+        elif choice == 4:
+            qty = getQty("Canadian Dollars")
+            cval = qty * rCAD
+            print(qty, "Canadian Dollars has a value of %s" %currency(cval,grouping = True) )
+
+            
+            totcunits[choice - 1] = totcunits[choice - 1] + qty
+            totcval[choice - 1] = totcval[choice - 1] + cval
+
+        elif choice == 5:
+            qty = getQty("Rubles")
+            cval = qty * rRUB
+            print(qty, "Rubles has a value of %s" %currency(cval,grouping = True) )
+
+            
+            totcunits[choice - 1] = totcunits[choice - 1] + qty
+            totcval[choice - 1] = totcval[choice - 1] + cval
+
+        elif choice == 9:
+            getRates()
+
+        else:
+            print("Unknown Currency or Operation\n")
+     
+        print()
+        choice = getChoice();
+    print("Purchase Summary: ")
+    
+    gtotal = 0
+    for u in range (0,5):
+        print(totcnames[u], totcunits[u], "units for a value of: %s" %currency(totcval[u], grouping = True) ,  )
+        gtotal = gtotal + totcval[u]
+
+    print("The total value of all the proposed currency purchases was: %s"  %currency(gtotal,grouping = True))
+
+
+
+def  getQty(prompt):
+       
+    #used to return an integer greater than 0
+        while True:
+            try:
+                qty = int(input("How many " + prompt + " are you buying?\n"))
+
+                if qty > 0:
+                    break
+                else:
+                    print("Illegal input, Input a number above 0\n")
+            except:
+                print("Illegal input, (please input a number (without decimal points) above 0) Please try again\n")
+
+        return qty 
+   
+
+
+
+def main():
+
+    #checks user's location
+    result = setlocale(LC_ALL, '')
+    #Checks if C is the default location set
+    if result == "C" or result.startswith("C/"):
+         #sets user's country to US 
+        setlocale(LC_ALL, 'en_US')
+        
+    print("Welcome to the Foreign Currency Calculator\n")
+
+    getRates()
+    doValuation()
+    
+    print("Thank you for utilising this Foreign Currency Calculator!")
+
+
+
+#launch program based on environment variable __name__ 
+if __name__ == "__main__":
+    main()
